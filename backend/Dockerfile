@@ -1,24 +1,15 @@
 FROM python:3.11-slim
 
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PIP_ROOT_USER_ACTION=ignore
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Instalar dependencias del sistema
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copiar requirements
+# Copiar e instalar dependencias de forma limpia
 COPY requirements.txt .
-
-# Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código de la app
+# El resto de tu configuración...
 COPY . .
-
-# Exponer puerto
-EXPOSE 8000
-
-# Comando de inicio
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
